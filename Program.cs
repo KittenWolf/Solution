@@ -1,19 +1,21 @@
-﻿using Solution;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-internal class Program
+namespace Solution
 {
-    private static void Main(string[] args)
+    internal class Program
     {
-        Stopwatch sw = new();
-        sw.Start();
+        private static void Main()
+        {
+            Stopwatch sw = new();
+            sw.Start();
 
-        TripletAnalyzer ta = new(@"???", 2);
+            TripletAnalyzer ta = new(@"???", 2);
 
-        ta.FindAllMatches();
-        ta.SortMatches();
-        var matches = ta.TakeMatches(10);
+            ta.FindAllMatches();
+            ta.SortMatches();
+            var matches = ta.TakeMatches(10);
 
-        Console.WriteLine("RunTime: {0}ms", sw.ElapsedMilliseconds);
+            Console.WriteLine("RunTime: {0}ms", sw.ElapsedMilliseconds);
+        }
     }
 }
