@@ -1,21 +1,19 @@
-﻿using System.Diagnostics;
-
-namespace Solution
+﻿namespace Solution
 {
     internal class Program
     {
         private static void Main()
         {
-            Stopwatch sw = new();
-            sw.Start();
+            string[] filePathes =
+            {
+                @"C:\Users\Fonar\OneDrive\Рабочий стол\texts\book.txt",
+                @"C:\Users\Fonar\OneDrive\Рабочий стол\texts\text3.txt",
+                @"C:\Users\Fonar\OneDrive\Рабочий стол\texts\text5.txt"
+            };
 
-            TripletAnalyzer ta = new(@"???", 2);
+            TextAnalyzer ta = new(new StringTripletAnalyzer());
 
-            ta.FindAllMatches();
-            ta.SortMatches();
-            var matches = ta.TakeMatches(10);
-
-            Console.WriteLine("RunTime: {0}ms", sw.ElapsedMilliseconds);
+            ta.ParallelGetTriplets(filePathes);
         }
     }
 }
