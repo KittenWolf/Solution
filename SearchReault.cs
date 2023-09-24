@@ -5,9 +5,9 @@
         private readonly long _procesingTime = 0;
         private readonly string _path = "Undefiend path";
 
-        private Dictionary<string, int> _result = new();
+        private IDictionary<string, int> _result;
 
-        public SearchResult(string path, Dictionary<string, int> result, long time)
+        public SearchResult(string path, IDictionary<string, int> result, long time)
         {
             _path = path;
             _result = result;

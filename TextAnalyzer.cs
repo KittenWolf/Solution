@@ -2,34 +2,35 @@
 {
     internal class TextAnalyzer
     {
-        private List<Task<SearchResult>> _tasks = new();
-        private readonly TripletAnalyzer _analyzer;
+        private readonly TripletAnalyzer _analyzer = new();
 
-        public TextAnalyzer(TripletAnalyzer analyzer)
+        public void GetTriplets(string path, bool parallelSearching = false)
         {
-            _analyzer = analyzer;
+            if (!File.Exists(path)) return;
+
+            var result = _analyzer.GetResult(path, parallelSearching);
+
+            result.PrintResults(10);
         }
 
-        public void GetTriplets(string path)
+        public void ParallelGetTriplets(string[] pathes, bool parallelSearching = false)
         {
-            var result = _analyzer.FindAllMatches(path);
+            var tasks = new List<Task<SearchResult>>();
 
-            result?.PrintResults(10);
-        }
-
-        public void ParallelGetTriplets(params string[] pathes)
-        {
             foreach (var path in pathes)
             {
-                var task = Task.Run(() => _analyzer.FindAllMatches(path));
-                _tasks.Add(task);
+                if (!File.Exists(path)) continue;
+
+                var task = Task.Run(() => _analyzer.GetResult(path, parallelSearching));
+
+                tasks.Add(task);
             }
 
-            Task.WaitAll(_tasks.ToArray());
+            Task.WaitAll(tasks.ToArray());
 
-            foreach (var task in _tasks)
+            foreach (var task in tasks)
             {
-               task.Result?.PrintResults(10);
+               task.Result.PrintResults(10);
             }
         }
     }
