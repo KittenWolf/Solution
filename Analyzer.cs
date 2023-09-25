@@ -3,18 +3,18 @@ using System.Diagnostics;
 
 namespace Solution
 {
-    internal class TripletAnalyzer
+    internal class Analyzer
     {
-        private readonly int _matchesInARow = 3;
-        private readonly decimal _optimalChunkSize = 25000;
+        private readonly decimal _optimalChunkSize = 10000;
 
         public SearchResult GetResult(string path, bool parallelSearching = false)
         {
             Stopwatch sw = new();
             sw.Start();
 
-            string content = File.ReadAllText(path).Replace("\r\n", " ").ToLower();
-            string[] words = (from word in content.Split(' ') where word.Length >= 3 select word).ToArray();
+            string content = File.ReadAllText(path);
+            content = new(content.Where(c => !char.IsPunctuation(c)).ToArray());
+            string[] words = (from word in content.ToLower().Split(' ') where word.Length == 3 select word).ToArray();
 
             var result = parallelSearching 
                 ? ParallelSearch(words) 
@@ -29,7 +29,7 @@ namespace Solution
         {
             var result = new Dictionary<string, int>();
 
-            CheckWords(content, result);
+            CountWords(content, result);
 
             return result;
         }
@@ -42,7 +42,7 @@ namespace Solution
 
             foreach (var wordChunk in chunks)
             {
-                tasks.Add(Task.Run(() => CheckWords(wordChunk, result)));
+                tasks.Add(Task.Run(() => CountWords(wordChunk, result)));
             }
 
             Task.WaitAll(tasks.ToArray());
@@ -57,36 +57,25 @@ namespace Solution
              
             return words.Chunk(wordsCount).ToList();
         }
-        private void CheckWords(string[] words, IDictionary<string, int> result)
+        private void CountWords(string[] words, Dictionary<string, int> result)
         {
             foreach (var word in words)
             {
-                int last = 0;
-                int repeats = 0;
-
-                foreach (var @char in word)
+                if (!result.ContainsKey(word))
                 {
-                    repeats = (last == @char) ? repeats + 1 : 1;
-                    last = @char;
-
-                    if (repeats == _matchesInARow)
-                    {
-                        string triplet = new((char)last, repeats);
-
-                        if (!result.ContainsKey(triplet))
-                        {
-                            //ArgumentException. Idk why...
-                            result.TryAdd(triplet, 1);
-                        }
-                        else
-                        {
-                            result[triplet]++;
-                        }
-
-                        repeats = 0;
-                        last = 0;
-                    }
+                    result.Add(word, 1);
                 }
+                else
+                {
+                    result[word]++;
+                }
+            }
+        }
+        private void CountWords(string[] words, ConcurrentDictionary<string, int> result)
+        {
+            foreach (var word in words)
+            {
+                result.AddOrUpdate(word, 1, (key, value) => value + 1);                
             }
         }
     }

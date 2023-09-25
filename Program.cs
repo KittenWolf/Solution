@@ -6,13 +6,13 @@
         {
             string[] filePathes =
             {
-                
+
             };
 
             TextAnalyzer ta = new();
 
-            ta.ParallelGetTriplets(filePathes, true);
-            //ta.GetTriplets(@"", true);
+            //ta.ParallelGetTriplets(filePathes, false);
+            ta.GetTriplets(@"", true);
         }
     }
 }

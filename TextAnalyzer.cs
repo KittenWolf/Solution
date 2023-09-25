@@ -2,7 +2,7 @@
 {
     internal class TextAnalyzer
     {
-        private readonly TripletAnalyzer _analyzer = new();
+        private readonly Analyzer _analyzer = new();
 
         public void GetTriplets(string path, bool parallelSearching = false)
         {
